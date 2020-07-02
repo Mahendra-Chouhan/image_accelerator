@@ -15,8 +15,8 @@ from PIL import Image
 from ImageAnalytics_info import get_info_main
 from Pre_Processing_Acc.preProcessing_main_app import pp_main_app
 from Custom_clf.imgClf_main_app import img_clf_main
-# from Object_Detection.objDetect_main import objDetect_main_app
-# from Image_Segmentation.imgSegmentation_main import imgSegment_main_app
+from Object_Detection.objDetect_main import objDetect_main_app
+from Image_Segmentation.imgSegmentation_main import imgSegment_main_app
 from Auto_Image_Tagger.imgTaggerv2_main import autoTagger_main_app
 # from Pose_Estimation.poseEstimation_main import poseEstimation_main_app
 # from Action_Recognition.actionRecognition_main import actionRecognition_main_app
