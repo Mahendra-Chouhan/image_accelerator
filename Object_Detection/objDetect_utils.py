@@ -25,8 +25,8 @@ def get_object_detection(img_object, model="yolo3_darknet53_coco", thresh=0.7, i
 
 	net = model_zoo.get_model(model, pretrained=True)
 
-	if is_limited_classes:
-		net.reset_class(class_list, reuse_weights=class_list)
+	# if is_limited_classes:
+	# 	net.reset_class(class_list, reuse_weights=class_list)
 
 	try:
 		img_object = utils.download(img_object)

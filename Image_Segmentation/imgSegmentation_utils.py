@@ -15,8 +15,8 @@ def get_img_segment(img_object, model="mask_rcnn_resnet50_v1b_coco", thresh=0.7,
 
 	net = model_zoo.get_model(model, pretrained=True)
 
-	if is_limited_classes:
-		net.reset_class(class_list, reuse_weights=class_list)
+	# if is_limited_classes:
+	# 	net.reset_class(class_list, reuse_weights=class_list)
 
 	try:
 		img_object = utils.download(img_object)

@@ -66,14 +66,14 @@ def main_app():
 
 		threshold = st.slider("Threshold:", 0.10, 1.0, 0.70, 0.05)
 
-		class_check = st.checkbox("Select limited classes?")
+		class_check = False #st.checkbox("Select limited classes?")
 
 		cls_lst=[]
 
-		if class_check:
-			net = model_zoo.get_model(model_arch, pretrained=True)
-			model_cls = net.classes
-			cls_lst = st.multiselect("Select classes you want to include:",model_cls)
+		# if class_check:
+		# 	net = model_zoo.get_model(model_arch, pretrained=True)
+		# 	model_cls = net.classes
+		# 	cls_lst = st.multiselect("Select classes you want to include:",model_cls)
 
 
 		ax = get_object_detection(inp_img, model_arch, threshold, class_check, cls_lst)
