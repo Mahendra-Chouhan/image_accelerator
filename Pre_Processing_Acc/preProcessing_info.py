@@ -19,8 +19,8 @@ def get_info_preproc():
 
 	st.markdown("## 3. Filtring Techniques")
 	st.markdown("3.1 Blur filter")
-	st.markdown("3.2 Laplacian Filter")
-	st.markdown("3.3 Canny Edge Filter")
+	# st.markdown("3.2 Laplacian Filter")
+	st.markdown("3.2 Canny Edge Filter")
 
 	st.markdown("## 4. Histogram Equalization")
 

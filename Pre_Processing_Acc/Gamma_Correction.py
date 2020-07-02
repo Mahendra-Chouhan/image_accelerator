@@ -43,9 +43,13 @@ def adjust_gamma_app():
 
 		st.markdown("---")
 		gamma_val = st.slider("Select Gamma Value", -3., 3., 1.6, 0.1)
-		
-		out_img = adjust_gamma(img_cv2, gamma_val)
-		out_img_pil = Image.fromarray(out_img)
-		
-		st.subheader("Gamma Changed")
-		st.image(out_img_pil, caption = "Gamma Changed Image", use_column_width=True)
+
+		if gamma_val==0:
+			st.warning("You have selected gamma as 0, which means you are \
+				dividing some valur by 0, and it's not right. Please Change value.")
+		else:
+			out_img = adjust_gamma(img_cv2, gamma_val)
+			out_img_pil = Image.fromarray(out_img)
+			
+			st.subheader("Gamma Changed")
+			st.image(out_img_pil, caption = "Gamma Changed Image", use_column_width=True)

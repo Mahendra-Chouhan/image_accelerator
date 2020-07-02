@@ -14,7 +14,8 @@ def get_info_main():
 	st.markdown("## 2. Custom Image Classifier")
 	st.markdown("## 3. Auto Image Tagger")
 	st.markdown("## 4. Object Detection")
-	st.markdown("## 5. Image Segmentation")
-	st.markdown("## 6. Pose Estimation")
-	st.markdown("## 7. Action Recognition")
+	st.markdown("## 5. Defect Detection")
+	st.markdown("## 6. Image Segmentation")
+	# st.markdown("## 6. Pose Estimation")
+	# st.markdown("## 7. Action Recognition")
 	

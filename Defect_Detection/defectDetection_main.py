@@ -12,7 +12,7 @@ import random
 import time
 
 
-DATA_PATH = "/home/tejas-radax/Desktop/WorkPlace/ImageAnalyticsACC/Defect_Detection/imgData/"
+DATA_PATH = "Defect_Detection/imgData/"
 DATA_MAPPING = [
 	{'og': 'small_nut_defect_og.JPG', 'res': 'small_nut_defect.jpg'}, 
 	{'og': 'Small_Big_Nut_og.JPG', 'res': 'Small_Big_Nut.jpg'}, 
@@ -32,6 +32,8 @@ def defectDetection_main_app():
 
 
 	st.title("Defect Detection")
+	st.info("Defect detection is use case built using object detection.\
+		Here defects in the products are detected real time.")
 	st.markdown("---")
 	st.header("Results:")
 

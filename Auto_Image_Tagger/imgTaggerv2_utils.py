@@ -26,8 +26,8 @@ import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # Duct tape
-#import keras.backend.tensorflow_backend as tb
-#tb._SYMBOLIC_SCOPE.value = True
+# import keras.backend.tensorflow_backend as tb
+# tb._SYMBOLIC_SCOPE.value = True
 
 
 

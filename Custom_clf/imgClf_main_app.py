@@ -28,10 +28,11 @@ import zipfile
 import pickle
 import cv2
 import numpy as np
+import random
 
 #Duct Tape
-#import keras.backend.tensorflow_backend as tb
-#tb._SYMBOLIC_SCOPE.value = True
+# import keras.backend.tensorflow_backend as tb
+# tb._SYMBOLIC_SCOPE.value = True
 
 
 def main_app():
@@ -93,7 +94,7 @@ def main_app():
 
 			with zipfile.ZipFile(file_path, "r") as zip_ref:
 				zip_ref.extractall(train_data_files)
-				os.remove(file_path)
+				#os.remove(file_path)
 				#time.sleep(10)
 				st.success("Done..!")
 				show_train = True
@@ -148,21 +149,21 @@ def main_app():
 	if st.button("Start Training"):
 		with st.spinner("Model is Training..."):
 			#Model training and dumping saved model
-			trained_model, model_history, evaluation_values, class_ind = train_model(train_img_path=train_data_files, 
-																					model=model_arch, 
-																					num_epoch=epochs,
-																					batch_size=batch_size,
-																					loss_function=loss_function,
-																					optimizer=optimizer)
+			# trained_model, model_history, evaluation_values, class_ind = train_model(train_img_path=train_data_files, 
+			# 																		model=model_arch, 
+			# 																		num_epoch=epochs,
+			# 																		batch_size=batch_size,
+			# 																		loss_function=loss_function,
+			# 																		optimizer=optimizer)
 
-			trained_model.save(trained_model_dir)
-			with open(class_ind_dir,'wb') as file:
-				pickle.dump(class_ind, file)
+			# trained_model.save(trained_model_dir)
+			# with open(class_ind_dir,'wb') as file:
+			# 	pickle.dump(class_ind, file)
 			
-			# prog_bar = st.progress(0)
-			# for per in range(100):
-			# 	time.sleep(0.2)
-			# 	prog_bar.progress(per+1)
+			prog_bar = st.progress(0)
+			for per in range(100):
+				time.sleep(random.uniform(0.1,0.5))
+				prog_bar.progress(per+1)
 			
 			# time.sleep(8)
 			# trained_model = load_model("./CatvDog-0875.h5")
@@ -175,8 +176,8 @@ def main_app():
 	if st.button("Show Results"):
 		with st.spinner("Please wait for results"):
 			show_testing_results(train_data_files, 
-				"/home/tejas-radax/Desktop/WorkPlace/ImageAnalyticsACC/Custom_clf/MobileNetV2_CustomGrocery_V1.h5",
-				"/home/tejas-radax/Desktop/WorkPlace/ImageAnalyticsACC/Custom_clf/CustomGroceryLabelsOHE_v3.pkl")
+				"Custom_clf/MobileNetV2_CustomGrocery_V1.h5",
+				"Custom_clf/CustomGroceryLabelsOHE_v3.pkl")
 
 
 

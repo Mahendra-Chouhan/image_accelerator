@@ -56,35 +56,35 @@ def blur_filter_img(img_obj, kernel_size=5):
 
 
 
-def laplacian_filter_img(img_obj, kernel_size=7):
+# def laplacian_filter_img(img_obj, kernel_size=7):
 
-	"""
-	Description:
-	------------
-		Edge detection filter, laplacian filter used after Guassian blur
+# 	"""
+# 	Description:
+# 	------------
+# 		Edge detection filter, laplacian filter used after Guassian blur
 
-	Params:
-	-------
-	img_path : str
-		path to the image to be processed
-	kernel_size : int (Default : 7)
-		size of the kernel to use for applying filter on the image.
+# 	Params:
+# 	-------
+# 	img_path : str
+# 		path to the image to be processed
+# 	kernel_size : int (Default : 7)
+# 		size of the kernel to use for applying filter on the image.
 
 
-	Returns:
-	--------
-	Processed image
-	"""
+# 	Returns:
+# 	--------
+# 	Processed image
+# 	"""
 
-	#Edge detection filter, laplacian filter used after Guassian blur
+# 	#Edge detection filter, laplacian filter used after Guassian blur
 
-	img = img_obj
-	kernel = (kernel_size, kernel_size)
-	blur = cv2.GaussianBlur(img,kernel,0)
-	filteredImg = cv2.Laplacian(blur,cv2.CV_64F, ksize=kernel_size)
-	filteredImg = ((filteredImg/filteredImg.max())*255).astype(np.uint8)
+# 	img = img_obj
+# 	kernel = (kernel_size, kernel_size)
+# 	blur = cv2.GaussianBlur(img,kernel,0)
+# 	filteredImg = cv2.Laplacian(blur,cv2.CV_64F, ksize=kernel_size)
+# 	filteredImg = ((filteredImg/filteredImg.max())*255).astype(np.uint8)
 
-	return filteredImg
+# 	return filteredImg
 
 
 def canny_edge_filter_img(img_obj, minVal=100, maxVal=200):
@@ -131,7 +131,7 @@ def filtering_app():
 		st.markdown("---")
 
 		filter_type = st.selectbox("Select Filter Type",
-			("Blur_Filter", "Canny_Edge_Filter", "Laplacian_Filter"))
+			("Blur_Filter", "Canny_Edge_Filter")) #, "Laplacian_Filter"))
 
 		if filter_type == "Blur_Filter":
 			kernel_size = st.slider("kernel Size", 1, 11, 5, 1)
@@ -141,14 +141,14 @@ def filtering_app():
 			st.subheader("Filtered Image : Blur/Box Filter")
 			st.image(out_img_pil, caption = "Image after Filtering", use_column_width=True)
 
-		elif filter_type == "Laplacian_Filter":
-			st.info("Kernel value should be odd")
-			kernel_size = st.slider("kernel Size", 1, 11, 7, 1)
-			out_img = edge_filter_img(img_cv2, kernel_size)
-			out_img_pil = Image.fromarray(out_img)
+		# elif filter_type == "Laplacian_Filter":
+		# 	st.info("Kernel value should be odd")
+		# 	kernel_size = st.slider("kernel Size", 1, 11, 7, 1)
+		# 	out_img = edge_filter_img(img_cv2, kernel_size)
+		# 	out_img_pil = Image.fromarray(out_img)
 			
-			st.subheader("Filtered Image : Laplacian Filter")
-			st.image(out_img_pil, caption = "Image after Filtering", use_column_width=True)
+		# 	st.subheader("Filtered Image : Laplacian Filter")
+		# 	st.image(out_img_pil, caption = "Image after Filtering", use_column_width=True)
 
 		elif filter_type == "Canny_Edge_Filter":
 			minVal = st.slider("Minimum Thresold Value", 1, 300, 100, 1)
