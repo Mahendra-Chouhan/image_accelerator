@@ -7,6 +7,10 @@
 import streamlit as st
 import time
 
+#Duct Tape
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior() 
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -21,6 +25,9 @@ from keras.models import Model
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import pickle
+import seaborn as sns
+import pandas as pd
 
 import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
@@ -54,7 +61,7 @@ def read_img_from_path(img_path, img_size=(224,224)):
 
 
 # @st.cache(show_spinner=False, suppress_st_warning=True, allow_output_mutation = True)
-def read_img_object(img_obj, img_size=(224,224)):
+def read_img_object(img_obj, img_size=(224,224), is_imagenet=False):
 	'''
 	Reading and preprocessing image from OpenCV object as per requirments of different CNN network architecture
 	Prams:
@@ -69,7 +76,10 @@ def read_img_object(img_obj, img_size=(224,224)):
 	# img = img_to_array(img) # converting img to array
 	img = np.expand_dims(img, axis=0) # Dimension by making the shape (1, inputShape[0], inputShape[1], 3)
 	
-	img = inception_v3.preprocess_input(img)
+	if is_imagenet:
+		img = inception_v3.preprocess_input(img)
+	else:
+		img = img/255.
 	# img = imagenet_utils.preprocess_input(img)
 
 	return img
@@ -83,6 +93,16 @@ def get_model(model_name = "mobilenet_v2.MobileNetV2"):
 	# print(type(model))
 	return trained_model
 
+@st.cache(show_spinner=True, suppress_st_warning=False, allow_output_mutation = True)
+def get_fashion_model(model_name = "MobileNetV2"):
+	model_list = {
+		"MobileNetV2" : "Auto_Image_Tagger/FashionWeights/FashionData200_MobileNetV2_40eps_71pct_V2.h5",
+		"InceptionResNetV2" : "Auto_Image_Tagger/FashionWeights/FashionData300_InceptionResNetV2_40eps_83pct_V4.h5"
+	}
+	model_loaded = load_model(model_list[model_name], custom_objects={
+	'Adam': lambda **kwargs: hvd.DistributedOptimizer(keras.optimizers.Adam(**kwargs))
+})
+	return model_loaded
 
 
 
@@ -112,7 +132,7 @@ def img_tagger(img_object, model_arch):
 	elif model_arch in list_299:
 		img_size = (299, 299)
 
-	img = read_img_object(img_object, img_size)
+	img = read_img_object(img_object, img_size, True)
 	model = get_model(model_arch)
 
 	global graph
@@ -125,7 +145,79 @@ def img_tagger(img_object, model_arch):
 
 
 
-def viz_filters(trained_model, img_object):
+def plot_imgnet_results(resDf):
+	lbl = []
+	probs = []
+	for (i, (imagenetID, label, prob_val)) in enumerate(resDf[0]):
+		lbl.append(label)
+		probs.append(prob_val*100)
+
+	f, ax = plt.subplots(figsize=(7,4))
+
+	sns.set_color_codes("pastel")
+	bplt = sns.barplot(lbl, probs)
+	
+	for p in bplt.patches:
+		bplt.text(p.get_x()+p.get_width()/2.,
+			p.get_height() +2 ,
+            '{:1.2f}%'.format(p.get_height()),
+            ha="center")
+	
+	sns.despine(top=True, right=True, left=True,  bottom=False)
+	ax.set_ylabel('')
+	ax.set_yticks([])
+	plt.xticks(rotation = 10)
+	
+	st.subheader("Results")
+	st.pyplot()
+
+
+
+def img_tagger_fashion(img_object, model_arch):
+	
+	img = read_img_object(img_object, (128,128), False)
+	model = get_fashion_model(model_arch)
+
+	preds = model.predict(img)
+
+	# reading class mapping
+	with open("D:/WorkPlace/ImageAnalyticsACC/Auto_Image_Tagger/FashionWeights/FashionData_31_ClassMapping.pkl", "rb") as cls_file:
+		class_mapping = pickle.load(cls_file)
+
+
+	# Matching class labels and predictions
+	get_label = lambda ind : list( class_mapping.keys() )[ list(class_mapping.values()).index( ind ) ]
+	pred_list=[ [get_label(indx), preds[0][indx]*100] for indx in range(0,5)]
+	pred_df = pd.DataFrame(pred_list, columns=['label', 'confidance'])
+
+	return pred_df, model
+
+def plot_fashion_result(resDF):
+
+	f, ax = plt.subplots(figsize=(7,4))
+
+	sns.set_color_codes("pastel")
+	bplt = sns.barplot('label', 'confidance', data=resDF)
+	for p in bplt.patches:
+		bplt.text(p.get_x()+p.get_width()/2.,
+			p.get_height()  ,
+            '{:1.2f}%'.format(p.get_height()),
+            ha="center")
+	
+	sns.despine(top=True, right=True, left=True,  bottom=False)
+	ax.set_ylabel('')
+	ax.set_yticks([])
+	plt.xticks(rotation = 10)
+
+	st.pyplot()
+	
+
+
+
+
+
+
+def viz_filters(trained_model, img_object, is_imagenet=False):
 	'''
 	//TODO
 	'''
@@ -158,8 +250,8 @@ def viz_filters(trained_model, img_object):
 	activation_model = Model(inputs=model.input, outputs=layer_outputs) # Model for getting activations
 	images_per_row = 8 # change according to filters in CNN layers
 
-	img_sz = ( (model.layers[0]).input_shape[1], (model.layers[0]).input_shape[2] )
-	activations = activation_model.predict(read_img_object(img_object,img_sz))
+	img_sz = ( (model.layers[0]).input_shape[0][1], (model.layers[0]).input_shape[0][2] )
+	activations = activation_model.predict(read_img_object(img_object, img_sz, is_imagenet))
 
 	for layer_name, activation in zip(layer_names, activations):
 		# Building plots with layer mapping

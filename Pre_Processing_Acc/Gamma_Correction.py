@@ -46,7 +46,7 @@ def adjust_gamma_app():
 
 		if gamma_val==0:
 			st.warning("You have selected gamma as 0, which means you are \
-				dividing some valur by 0, and it's not right. Please Change value.")
+				dividing some value by 0, and it's not right. Please Change value.")
 		else:
 			out_img = adjust_gamma(img_cv2, gamma_val)
 			out_img_pil = Image.fromarray(out_img)

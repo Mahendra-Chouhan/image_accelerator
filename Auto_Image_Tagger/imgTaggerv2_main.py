@@ -4,6 +4,10 @@ Auto Image Tagger will take single image as input and returns top 5
 classifiaction results.
 '''
 
+#Duct Tape
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior() 
+
 import cv2
 from PIL import Image
 import numpy as np
@@ -12,7 +16,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 
-from Auto_Image_Tagger.imgTaggerv2_utils import img_tagger, viz_filters
+from Auto_Image_Tagger.imgTaggerv2_utils import img_tagger, viz_filters, plot_imgnet_results
+from Auto_Image_Tagger.imgTaggerv2_utils import img_tagger_fashion, plot_fashion_result
 from Auto_Image_Tagger.imgTaggerv2_info import get_info_autoTagger
 
 import warnings
@@ -48,48 +53,48 @@ def main_app():
 	}
 
 
+	dataSelect = st.radio("Select dataset", 
+		("ImageNet", "FashionData"))
 
-	inp_img = st.file_uploader("Upload your image, (jpg, png)", type=['jpg','png', 'jpeg'])
+	if dataSelect == "ImageNet":
 
-	model_arch_sel = st.selectbox('Select model architecture:',list(model_arch_list.keys()))
-	model_arch = model_arch_list[model_arch_sel]
+		inp_img = st.file_uploader("Upload your image, (jpg, png)", type=['jpg','png', 'jpeg'])
 
-	if inp_img:
-		img_pil = Image.open(inp_img)
-		img_cv2 = np.array(img_pil)
-		st.image(img_pil, caption = "Your image", use_column_width=True)
-		st.markdown("---")
+		model_arch_sel = st.selectbox('Select model architecture:',list(model_arch_list.keys()))
+		model_arch = model_arch_list[model_arch_sel]
 
-		img_result, loaded_model = img_tagger(img_cv2, model_arch)
+		if inp_img:
+			img_pil = Image.open(inp_img)
+			img_cv2 = np.array(img_pil)
+			st.image(img_pil, caption = "Your image", use_column_width=True)
+			st.markdown("---")
 
-		with st.spinner("Loading Trained Layers"):
-			viz_filters(loaded_model, img_cv2)
+			img_result, loaded_model = img_tagger(img_cv2, model_arch)
 
+			with st.spinner("Loading Trained Layers"):
+				viz_filters(loaded_model, img_cv2, True)
 
-		lbl = []
-		probs = []
-		for (i, (imagenetID, label, prob_val)) in enumerate(img_result[0]):
-			lbl.append(label)
-			probs.append(prob_val*100)
+			plot_imgnet_results(img_result)
 
-		f, ax = plt.subplots(figsize=(7,4))
+	elif dataSelect == "FashionData":
 
-		sns.set_color_codes("pastel")
-		bplt = sns.barplot(lbl, probs)
-		
-		for p in bplt.patches:
-			bplt.text(p.get_x()+p.get_width()/2.,
-				p.get_height() +2 ,
-	            '{:1.2f}%'.format(p.get_height()),
-	            ha="center")
-		
-		sns.despine(top=True, right=True, left=True,  bottom=False)
-		ax.set_ylabel('')
-		ax.set_yticks([])
-		plt.xticks(rotation = 10)
-		
-		st.subheader("Results")
-		st.pyplot()
+		inp_img = st.file_uploader("Upload your image, (jpg, png)", type=['jpg','png', 'jpeg'])
+
+		model_arch_sel = st.selectbox('Select model architecture:',
+			("MobileNetV2", "InceptionResNetV2"))
+
+		if inp_img:
+			img_pil = Image.open(inp_img)
+			img_cv2 = np.array(img_pil)
+			st.image(img_pil, caption = "Your image", use_column_width=True)
+			st.markdown("---")
+
+			img_result, loaded_model = img_tagger_fashion(img_cv2, model_arch_sel)
+
+			# with st.spinner("Loading Trained Layers"):
+			# 	viz_filters(loaded_model, img_cv2, False)
+
+			plot_fashion_result(img_result)
 
 
 
